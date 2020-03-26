@@ -1,0 +1,10 @@
+def incr
+repeat 1
+last
+left 1 +
+
+def main
+repeat 1
+last
+5 0 incr
+.
