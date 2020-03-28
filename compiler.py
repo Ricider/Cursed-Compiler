@@ -34,7 +34,7 @@ class block:
         self.asm+="movq -8(%rsp), %rax\n" #accum to return        
         self.asm+="ret\n"
             
-symbols=["+","-"]
+symbols=["add","sub"]
 keywords=["def"]
 variables=["left","right"]
 
@@ -45,16 +45,16 @@ source=open("input.txt","r")
 sourceStr=source.read()
 
 tokens=[]
-asmBlocks=[block("+",None,
-              "+:\n"+
+asmBlocks=[block("add",None,
+              "add:\n"+
               "movq 16(%rsp), %rbx\n"+
               "movq 8(%rsp), %rcx\n"+
               "addq %rcx, %rbx\n"+
               "movq %rbx, %rax\n"+
               "ret\n"
               ),
-           block("-",None,
-              "-:\n"+
+           block("sub",None,
+              "sub:\n"+
               "movq 16(%rsp), %rbx\n"+
               "movq 8(%rsp), %rcx\n"+
               "subq %rcx, %rbx\n"+
@@ -92,4 +92,5 @@ for i in range(len(defPos)-1):
     asmBlocks[-1].astGen()
     asmBlocks[-1].asmGen()
     
+print (".global func\n")
 for i in asmBlocks: print(i.asm)
