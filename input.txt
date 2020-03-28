@@ -1,6 +1,6 @@
-def incr
-left add 1
+def condTest
+left sub right is_condition 0 of 5
 
 def func
-3 add 22 incr 0 incr 0 sub 37
+3 condTest 4 
 .
