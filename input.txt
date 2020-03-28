@@ -1,6 +1,13 @@
-def sum
-left sub 1 is_condition 1 of left sub 1 sum 0 add left
+def mul
+( left sub 0 )
+ifNegative ( 0 )
+ifPositive ( left sub 1 mul right add right )
+
+def factorial
+( left sub 0 )
+ifNegative ( 1 )
+ifPositive ( left sub 1 factorial 0 mul left )
 
 def func
-100 sum 0
+5 factorial 0
 .
