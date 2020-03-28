@@ -1,5 +1,3 @@
-global condCtr
-condCtr=0
 class block:
     def __init__(self,symbol,tokens,asm=""):
         self.symbol=symbol
@@ -34,8 +32,8 @@ class block:
         self.asm+="movq -8(%rsp), %rax\n" #accum to return        
         self.asm+="ret\n"
             
-symbols=["add","sub","is_condition", "of"]
-keywords=["def"]
+symbols=["add","sub","ifNegative", "ifPositive"]
+keywords=["def","(",")"]
 variables=["left","right"]
 
 tokenTypes=[symbols,keywords,variables]
@@ -61,8 +59,8 @@ asmBlocks=[block("add",None,
               "movq %rbx, %rax\n"+
               "ret\n"
               ),
-           block("is_condition",None,
-              "is_condition:\n"+
+           block("ifNegative",None,
+              "ifNegative:\n"+
               "movq 16(%rsp), %rbx\n"+
               "movq $1, %r9\n"+
               "cmp %rbx, %r9\n"+
@@ -74,8 +72,8 @@ asmBlocks=[block("add",None,
               "addq $32, %rsp\n"+
               "ret\n"
               ),
-           block("of",None,
-              "of:\n"+
+           block("ifPositive",None,
+              "ifPositive:\n"+
               "movq 8(%rsp), %rax\n"+
               "ret\n"
               )]
