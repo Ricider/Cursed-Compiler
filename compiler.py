@@ -33,7 +33,7 @@ class block:
         self.asm+="ret\n"
             
 symbols=["add","sub","ifNegative", "ifPositive"]
-keywords=["def","(",")"]
+keywords=["def","(",")","condition"]
 variables=["left","right"]
 
 tokenTypes=[symbols,keywords,variables]
