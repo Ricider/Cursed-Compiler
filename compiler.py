@@ -65,8 +65,8 @@ asmBlocks=[block("add",None,
               "is_condition:\n"+
               "movq -8(%rsp), %rbx\n"+
               "movq $1, %rax\n"+
-              "comp %rbx, %rax\n"+
-              "jg 32($rsp)"+
+              "cmp %rbx, %rax\n"+
+              "jg 32($rsp)\n"+
               "movq $0, 24($rsp)\n"+
               "ret\n"
               ),
