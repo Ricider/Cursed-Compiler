@@ -66,7 +66,7 @@ asmBlocks=[block("add",None,
               "movq 16(%rsp), %rbx\n"+
               "movq $1, %r9\n"+
               "cmp %rbx, %r9\n"+
-              "jge isFalse\n"+
+              "jg isFalse\n"+
               "movq $0, 24(%rsp)\n"+
               "ret\n"+
               "isFalse:\n"+
