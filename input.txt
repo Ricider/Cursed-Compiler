@@ -1,6 +1,6 @@
-def condTest
-left sub right is_condition 0 of 5
+def sum
+left sub 1 is_condition 1 of left sub 1 sum 0 add left
 
 def func
-3 condTest 4 
+100 sum 0
 .
