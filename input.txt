@@ -1,6 +1,6 @@
 def incr
-left + 1
+left add 1
 
 def func
-left + right incr 0
+left add right incr 0
 .
