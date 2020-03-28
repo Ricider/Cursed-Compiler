@@ -3,3 +3,4 @@ left + 1
 
 def func
 left + right incr 0
+.
