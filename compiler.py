@@ -70,13 +70,13 @@ asmBlocks=[block("add",None,
               "movq $0, 24(%rsp)\n"+
               "ret\n"+
               "isFalse:\n"+
-              "movq $1, %rax\n"+
+              "movq 8(%rsp), %rax\n"+
               "addq $32, %rsp\n"+
               "ret\n"
               ),
            block("of",None,
               "of:\n"+
-              "movq 16(%rsp), %rax\n"+
+              "movq 8(%rsp), %rax\n"+
               "ret\n"
               )]
 
