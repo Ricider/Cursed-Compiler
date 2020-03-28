@@ -2,5 +2,5 @@ def incr
 left add 1
 
 def func
-left add right incr 0
+3 add 22 incr 0 incr 0 sub 37
 .
