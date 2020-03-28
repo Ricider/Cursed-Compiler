@@ -1,3 +1,5 @@
+global condCtr
+condCtr=0
 class block:
     def __init__(self,symbol,tokens,asm=""):
         self.symbol=symbol
@@ -32,7 +34,7 @@ class block:
         self.asm+="movq -8(%rsp), %rax\n" #accum to return        
         self.asm+="ret\n"
             
-symbols=["add","sub"]
+symbols=["add","sub","is_condition", "of"]
 keywords=["def"]
 variables=["left","right"]
 
@@ -58,6 +60,20 @@ asmBlocks=[block("add",None,
               "subq %rcx, %rbx\n"+
               "movq %rbx, %rax\n"+
               "ret\n"
+              ),
+           block("is_condition",None,
+              "is_condition:\n"+
+              "movq -8(%rsp), %rbx\n"+
+              "movq $1, %rax\n"+
+              "comp %rbx, %rax\n"+
+              "jg 32($rsp)"+
+              "movq $0, 24($rsp)\n"+
+              "ret\n"
+              ),
+           block("of",None,
+              "of:\n"+
+              "movq 16(%rsp), %rax\n"+
+              "ret\n"
               )]
 
 #token generation
@@ -81,7 +97,7 @@ for i in wordList:
 defPos=[]
 for i in range(len(tokens)):
     if tokens[i][0]=="def": defPos.append(i)
-defPos.append(-1)
+defPos.append(-1)       
 
 #definition blocks
 for i in range(len(defPos)-1):
