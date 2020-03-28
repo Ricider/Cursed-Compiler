@@ -94,6 +94,7 @@ for i in wordList:
     if isSymbol: 
         symbols.append(i)
         tokens.append((i,"symbol"))
+tokens.append((".","symbol"))
         
 #definition blocks indexes
 defPos=[]
