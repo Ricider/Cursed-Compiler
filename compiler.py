@@ -69,8 +69,8 @@ asmBlocks=[block("add",None,
               "jl isFalse\n"+
               "movq $0, 24(%rsp)\n"+
               "ret\n"+
-              "isFalse:"+
-              "movq $1, %rax"+
+              "isFalse:\n"+
+              "movq $1, %rax\n"+
               "addq $32, %rsp\n"+
               "ret\n"
               ),
