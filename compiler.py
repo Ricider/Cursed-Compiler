@@ -64,12 +64,13 @@ asmBlocks=[block("add",None,
            block("is_condition",None,
               "is_condition:\n"+
               "movq 16(%rsp), %rbx\n"+
-              "movq $1, %rax\n"+
-              "cmp %rbx, %rax\n"+
+              "movq $1, %r9\n"+
+              "cmp %rbx, %r9\n"+
               "jl isFalse\n"+
               "movq $0, 24(%rsp)\n"+
               "ret\n"+
               "isFalse:"+
+              "movq $1, %rax"+
               "addq $32, %rsp\n"+
               "ret\n"
               ),
