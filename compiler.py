@@ -1,66 +1,66 @@
-global blocks
-
-def getBlock(symbol):
-    for i in blocks:
-        if i.symbol==symbol: return i
-
 class block:
-    def __init__(self, symbol="", repeatCount="",returnTech="",tokens=[],asm=""):
+    def __init__(self,symbol,tokens,asm=""):
         self.symbol=symbol
-        self.repeatCount=repeatCount
-        self.returnTech=returnTech
         self.tokens=tokens
-        if asm=="": asm=self.asmGen()
-        else: self.asm=asm
-        
-    def toString(self):
-        return self.symbol+" "+str(self.repeatCount)+" "+self.returnTech+" "+str(self.tokens)
-
-    def asmGen(self): #code generation for block
-        if self.symbol=="main": self.asm="movq (%rsp), %r12\n"
-        else: self.asm=""
-        rspOffset=0
+        self.operators=[] #2'nd level of ast
+        self.operands=[] #3'rd level of ast
+        self.asm=asm #for asm operators
+    def astGen(self): #for this operation only
         for i in self.tokens:
-            if i[1]=="constant":
-                self.asm+=("movq $"+str(i[0])+",(%rsp)\n")
-                self.asm+=("subq $8 , %rsp\n")
-                rspOffset+=8
-            if i[1]=="variable":
-                argOffset=16 if i[0]=="left" else 8 #left arg or right arg
-                self.asm+=("movq "+str(rspOffset+argOffset)+"(%rsp), %rbx\n") #rbx is temporary to move element from args to postfix stack
-                self.asm+=("movq %rbx,(%rsp)\n")
-                self.asm+=("subq $8 , %rsp\n")
-                rspOffset+=8
             if i[1]=="symbol":
-                blok=getBlock(i[0])
-                self.asm+=blok.asm
-                rspOffset-=8
+                self.operators.append(i[0])
+            if i[1]=="constant":
+                self.operands.append("$"+i[0])
+            if i[1]=="variable": #all operators have 2 variables therefore we can know their location on stack without a symbol table
+                if i[0]=="left": 
+                    self.operands.append("16(%rsp)") 
+                elif i[0]=="right":
+                    self.operands.append("8(%rsp)")
+    def asmGen(self):
+        self.asm+=self.symbol+":\n" #asm function label
+        self.asm+="movq "+self.operands[0]+", %rbx\n"
+        self.asm+="movq %rbx, -8(%rsp)\n" #set accum to first operand
+        self.asm+="subq $8, %rsp\n"
+        for i in range(len(self.operators)):
+            self.asm+="movq -8(%rsp), %rax\n" 
+            self.asm+="movq %rax, -16(%rsp)\n" #accum passed as left arg
+            self.asm+="movq "+self.operands[i+1]+", %rax\n"
+            self.asm+="movq %rax, -24(%rsp)\n"
+            self.asm+="subq $24, %rsp\n"
+            self.asm+="call "+self.operators[i]+"\n"
+            self.asm+="addq $24, %rsp\n"
+            self.asm+="movq %rax, -8(%rsp)\n" #return value passed to accum
 
-#tokens
+        self.asm+="movq -8(%rsp), %rax\n" #accum to return        
+        self.asm+="ret\n"
+            
 symbols=["+","-"]
-keywords=["def","repeat"]
+keywords=["def"]
 variables=["left","right"]
-returnTech=["accum","last","print"]
 
-tokenTypes=[symbols,keywords,variables,returnTech]
-tokenTypeNames=["symbol","keyword","variable","returnTech"]
+tokenTypes=[symbols,keywords,variables]
+tokenTypeNames=["symbol","keyword","variable"]
 
 source=open("input.txt","r")
 sourceStr=source.read()
 
 tokens=[]
-blocks=[block("+",1,"last",None, 
-              "movq 8(%rsp), %r10\n"+
-              "movq 16(%rsp), %r11\n"+
-              "addq %r10, %r11\n"+
-              "movq %r11, 16(%rsp)\n"+
-              "addq $8, %rsp\n"),
-        block("-",1,"last",None, 
-              "movq 8(%rsp), %r10\n"+
-              "movq 16(%rsp), %r11\n"+
-              "subq %r10, %r11\n"+
-              "movq %r11, 16(%rsp)\n"+
-              "addq $8, %rsp\n")]
+asmBlocks=[block("+",None,
+              "+:\n"+
+              "movq 16(%rsp), %rbx\n"+
+              "movq 8(%rsp), %rcx\n"+
+              "addq %rcx, %rbx\n"+
+              "movq %rbx, %rax\n"+
+              "ret\n"
+              ),
+           block("-",None,
+              "-:\n"+
+              "movq 16(%rsp), %rbx\n"+
+              "movq 8(%rsp), %rcx\n"+
+              "subq %rcx, %rbx\n"+
+              "movq %rbx, %rax\n"+
+              "ret\n"
+              )]
 
 #token generation
 wordList=sourceStr.split()
@@ -68,7 +68,7 @@ for i in wordList:
     isSymbol=True
     for v in range(len(tokenTypes)):
         if i.isnumeric():
-            tokens.append((int(i),"constant"))
+            tokens.append((i,"constant"))
             isSymbol=False
             break
         if i in tokenTypes[v]: 
@@ -88,14 +88,8 @@ defPos.append(-1)
 #definition blocks
 for i in range(len(defPos)-1):
     offset=defPos[i]
-    blocks.append(block(tokens[offset+1][0],
-                        tokens[offset+3][0],
-                        tokens[offset+4][0],
-                        tokens[offset+5:defPos[i+1]]))
-
-print(".global func")
-print("func:")
-print(blocks[3].asm)
-print("movq 8(%rsp), %rax")
-print("movq %r12, (%rsp)")
-print("ret")
+    asmBlocks.append(block(tokens[offset+1][0],tokens[offset+2:defPos[i+1]]))
+    asmBlocks[-1].astGen()
+    asmBlocks[-1].asmGen()
+    
+for i in asmBlocks: print(i.asm)
