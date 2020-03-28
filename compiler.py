@@ -20,7 +20,6 @@ class block:
         self.asm+=self.symbol+":\n" #asm function label
         self.asm+="movq "+self.operands[0]+", %rbx\n"
         self.asm+="movq %rbx, -8(%rsp)\n" #set accum to first operand
-        self.asm+="subq $8, %rsp\n"
         for i in range(len(self.operators)):
             self.asm+="movq -8(%rsp), %rax\n" 
             self.asm+="movq %rax, -16(%rsp)\n" #accum passed as left arg
@@ -30,7 +29,6 @@ class block:
             self.asm+="call "+self.operators[i]+"\n"
             self.asm+="addq $24, %rsp\n"
             self.asm+="movq %rax, -8(%rsp)\n" #return value passed to accum
-
         self.asm+="movq -8(%rsp), %rax\n" #accum to return        
         self.asm+="ret\n"
             
