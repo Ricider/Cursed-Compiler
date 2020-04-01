@@ -11,7 +11,7 @@ class block:
                 self.operators.append(i[0])
             if i[1]=="constant":
                 self.operands.append("$"+i[0])
-            if i[1]=="variable": #all operators have 2 variables therefore we can know their location on stack without a symbol table
+            if i[1]=="variable": 
                 if i[0]=="left": 
                     self.operands.append("16(%rsp)") 
                 elif i[0]=="right":
